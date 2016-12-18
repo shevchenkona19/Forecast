@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_city"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="itea.forecast.CityActivity">
+
+    <ImageView
+        android:id="@+id/ivCityActivityBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/defaultweather" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="2">
+
+
+        <TextView
+            android:id="@+id/tvCityActivityCityName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Kiev"
+            android:textAlignment="center"
+            android:textAppearance="@android:style/TextAppearance.Material.Large"
+            android:textColor="@color/colorLabel"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/tvCityActivityTemp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="-12C"
+            android:textAlignment="textEnd"
+            android:textAppearance="@android:style/TextAppearance.Material.Large"
+            android:textColor="@color/colorLabel"
+            android:textSize="80sp"
+            android:gravity="bottom" />
+    </LinearLayout>
+
+</RelativeLayout>
