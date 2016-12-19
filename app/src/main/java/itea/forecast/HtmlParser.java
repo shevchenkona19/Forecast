@@ -82,16 +82,16 @@ public class HtmlParser {
         return day;
     }
     /*
-    2-19 09:16:55.005 15486-15526/itea.forecast D/My Tag: Сегодня
-12-19 09:16:55.005 15486-15526/itea.forecast D/My Tag: Завтра
-12-19 09:16:55.005 15486-15526/itea.forecast D/My Tag: среда
-12-19 09:16:55.005 15486-15526/itea.forecast D/My Tag: четверг
-12-19 09:16:55.005 15486-15526/itea.forecast D/My Tag: пятница
-12-19 09:16:55.005 15486-15526/itea.forecast D/My Tag: 19 декабря
-12-19 09:16:55.005 15486-15526/itea.forecast D/My Tag: 20 декабря
-12-19 09:16:55.005 15486-15526/itea.forecast D/My Tag: 21 декабря
-12-19 09:16:55.005 15486-15526/itea.forecast D/My Tag: 22 декабря
-12-19 09:16:55.005 15486-15526/itea.forecast D/My Tag: 23 декабря
+    12-19 09:16:55.005 15486-15526/itea.forecast D/My Tag: Сегодня
+    12-19 09:16:55.005 15486-15526/itea.forecast D/My Tag: Завтра
+    12-19 09:16:55.005 15486-15526/itea.forecast D/My Tag: среда
+    12-19 09:16:55.005 15486-15526/itea.forecast D/My Tag: четверг
+    12-19 09:16:55.005 15486-15526/itea.forecast D/My Tag: пятница
+    12-19 09:16:55.005 15486-15526/itea.forecast D/My Tag: 19 декабря
+    12-19 09:16:55.005 15486-15526/itea.forecast D/My Tag: 20 декабря
+    12-19 09:16:55.005 15486-15526/itea.forecast D/My Tag: 21 декабря
+    12-19 09:16:55.005 15486-15526/itea.forecast D/My Tag: 22 декабря
+    12-19 09:16:55.005 15486-15526/itea.forecast D/My Tag: 23 декабря
      */
 
     public ArrayList<String> getNameOfDays(String html) {
