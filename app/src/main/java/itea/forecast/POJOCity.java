@@ -3,24 +3,22 @@ package itea.forecast;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.json.JSONObject;
+
 /**
  * Created by shevc on 14.12.2016.
  */
 public class POJOCity implements Parcelable{
     private String cityName;
-    private String cityTemp;
-    private String cityHtml;
+    private JSONObject cityObj;
 
-    public POJOCity(String cityName, String cityTemp, String cityHtml) {
+    public POJOCity(String cityName, JSONObject cityObj) {
         this.cityName = cityName;
-        this.cityTemp = cityTemp;
-        this.cityHtml = cityHtml;
+        this.cityObj = cityObj;
     }
 
     protected POJOCity(Parcel in) {
         cityName = in.readString();
-        cityTemp = in.readString();
-        cityHtml = in.readString();
     }
 
     public static final Creator<POJOCity> CREATOR = new Creator<POJOCity>() {
@@ -35,18 +33,6 @@ public class POJOCity implements Parcelable{
         }
     };
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(cityName);
-        parcel.writeString(cityTemp);
-        parcel.writeString(cityHtml);
-    }
-
     public String getCityName() {
         return cityName;
     }
@@ -55,19 +41,21 @@ public class POJOCity implements Parcelable{
         this.cityName = cityName;
     }
 
-    public String getCityTemp() {
-        return cityTemp;
+    public JSONObject getCityObj() {
+        return cityObj;
     }
 
-    public void setCityTemp(EditorWeather editorWeather) {
-
+    public void setCityObj(JSONObject cityObj) {
+        this.cityObj = cityObj;
     }
 
-    public String getCityHtml() {
-        return cityHtml;
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
-    public void setCityHtml(String cityHtml) {
-        this.cityHtml = cityHtml;
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(cityName);
     }
 }
