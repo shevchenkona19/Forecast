@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,14 +34,15 @@ public class lvAddCityAdapter extends ArrayAdapter<String> {
     private int currPos;
     private ProgressBar pbLoading;
     private EditText etSearch;
+    private Toast errorMsg;
 
     private static final String TAG = lvAddCityAdapter.class.getSimpleName();
 
-    interface ISendData{
-        void getData(POJOCity city);
+    interface ISendData {
+        void sendData(POJOCity city);
     }
 
-    public lvAddCityAdapter(Context context, int resource, ISendData sendData, ProgressBar pbLoading, EditText etSearch){
+    public lvAddCityAdapter(Context context, int resource, ISendData sendData, ProgressBar pbLoading, EditText etSearch) {
         super(context, resource);
         this.etSearch = etSearch;
         this.pbLoading = pbLoading;
@@ -49,6 +51,7 @@ public class lvAddCityAdapter extends ArrayAdapter<String> {
         list = new ArrayList<>();
         obj = null;
         inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        errorMsg = Toast.makeText(context, "Ooops! Server error, trying again", Toast.LENGTH_SHORT);
     }
 
     @Override
@@ -56,7 +59,7 @@ public class lvAddCityAdapter extends ArrayAdapter<String> {
         return list.size();
     }
 
-    public void updateList(List<String> list2){
+    public void updateList(List<String> list2) {
         list.clear();
         list.addAll(list2);
         notifyDataSetChanged();
@@ -68,9 +71,9 @@ public class lvAddCityAdapter extends ArrayAdapter<String> {
 
     @NonNull
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent){
+    public View getView(final int position, View convertView, ViewGroup parent) {
         View view = convertView;
-        if (view == null){
+        if (view == null) {
             view = inflater.inflate(R.layout.add_city_each_item, parent, false);
         }
         final TextView tvCityName = (TextView) view.findViewById(R.id.tvAddCityName);
@@ -82,10 +85,10 @@ public class lvAddCityAdapter extends ArrayAdapter<String> {
                 etSearch.setVisibility(View.GONE);
                 currPos = position;
                 GetJSONCityObj runn = new GetJSONCityObj();
-                for (int a = 0; a<CityNames.cityNames.length;a++){
-                    if (CityNames.cityNames[a].equals(list.get(position))){
-                        runn.execute(CityNames.cityNames[a+1]);
-                        Log.d("MY", "WOEID: " + CityNames.cityNames[a+1]);
+                for (int a = 0; a < CityNames.cityNames.length; a++) {
+                    if (CityNames.cityNames[a].equals(list.get(position))) {
+                        runn.execute(CityNames.cityNames[a + 1], CityNames.cityNames[a+2]);
+                        Log.d("MY", "WOEID: " + CityNames.cityNames[a + 1]);
                         break;
                     }
                 }
@@ -96,7 +99,7 @@ public class lvAddCityAdapter extends ArrayAdapter<String> {
         return view;
     }
 
-    private class GetJSONCityObj extends AsyncTask<String, Void, JSONObject>{
+    private class GetJSONCityObj extends AsyncTask<String, Void, POJOCity> {
 
         @Override
         protected void onPreExecute() {
@@ -105,26 +108,39 @@ public class lvAddCityAdapter extends ArrayAdapter<String> {
         }
 
         @Override
-        protected JSONObject doInBackground(String... strings) {
+        protected POJOCity doInBackground(String... strings) {
             JSONObject object = null;
+            POJOCity pojoCity;
             try {
-                object = new JSONObject(HttpHandler.getInstance().SendRequestToUrl(Integer.valueOf(strings[0])));
-                Log.d("MY", "JSON OBJ FROM SERVER: " + object.toString());
-            } catch (JSONException e){
+                boolean success;
+                do {
+                    object = new JSONObject(HttpHandler.getInstance().SendRequestToUrl(Integer.valueOf(strings[0])));
+                    Log.d("MY", "JSON OBJ FROM SERVER: " + object.toString());
+                    success = JSONWeatherParser.getInstance().isSuccess(object);
+                    if (success == false) {
+                        errorMsg.show();
+                    }
+                } while (success == false);
+            } catch (JSONException e) {
                 Log.e(TAG, e.getMessage());
             }
-            return object;
+            pojoCity = new POJOCity(list.get(currPos), object.toString(), strings[1]);
+            if (pojoCity.getCityObj() == null){
+                Log.e(TAG, "City object is null");
+            }
+            return pojoCity;
         }
 
         @Override
-        protected void onPostExecute(JSONObject object) {
-            super.onPostExecute(object);
+        protected void onPostExecute(POJOCity pojoCity) {
+            if (pojoCity.getCityObj() == null){
+                Log.e(TAG, "City object is null");
+            }
+            super.onPostExecute(pojoCity);
             etSearch = null;
-            obj = object;
-            POJOCity city = new POJOCity(list.get(currPos), obj);
             pbLoading.setVisibility(View.GONE);
             pbLoading = null;
-            sendData.getData(city);
+            sendData.sendData(pojoCity);
         }
     }
 }

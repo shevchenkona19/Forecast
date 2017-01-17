@@ -42,8 +42,8 @@ public class AddCityActivity extends AppCompatActivity implements lvAddCityAdapt
                 if(charSequence.toString().equals("")){
                     return;
                 }
-                for (int a = 0; a<=CityNames.cityNames.length; a += 2){
-                    if(a >= CityNames.cityNames.length-1){
+                for (int a = 0; a<=CityNames.cityNames.length; a += 3){
+                    if(a >= CityNames.cityNames.length-2){
                         continue;
                     }
                     try {
@@ -65,8 +65,8 @@ public class AddCityActivity extends AppCompatActivity implements lvAddCityAdapt
     }
 
     @Override
-    public void getData(POJOCity city) {
-        Log.d("MY", "GetData start...");
+    public void sendData(POJOCity city) {
+        Log.d("MY", "SendData start...");
         Bundle b = new Bundle();
         b.putParcelable("CITY", city);
         Intent intent = new Intent();

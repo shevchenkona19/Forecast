@@ -44,7 +44,7 @@ public class HttpHandler {
             Log.d(TAG, "Starting a connection...");
             Log.d(TAG, "Response Code is: " + responseCode);
             if (responseCode == 400){
-                Log.d(TAG, "Ooops, something is wrong with query...");
+                Log.e(TAG, "Ooops, something is wrong with query...");
             }
             InputStream in = new BufferedInputStream(connection.getInputStream());
             response = ConvertInputStreamToString(in);

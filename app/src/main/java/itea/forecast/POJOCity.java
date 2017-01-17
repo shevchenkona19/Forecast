@@ -2,7 +2,9 @@ package itea.forecast;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -10,15 +12,21 @@ import org.json.JSONObject;
  */
 public class POJOCity implements Parcelable{
     private String cityName;
-    private JSONObject cityObj;
+    private String cityObj;
+    private String cityImage;
 
-    public POJOCity(String cityName, JSONObject cityObj) {
+    private static final String TAG = POJOCity.class.getSimpleName();
+
+    public POJOCity(String cityName, String cityObj, String cityImage) {
         this.cityName = cityName;
         this.cityObj = cityObj;
+        this.cityImage = cityImage;
     }
 
     protected POJOCity(Parcel in) {
         cityName = in.readString();
+        cityObj = in.readString();
+        cityImage = in.readString();
     }
 
     public static final Creator<POJOCity> CREATOR = new Creator<POJOCity>() {
@@ -42,11 +50,25 @@ public class POJOCity implements Parcelable{
     }
 
     public JSONObject getCityObj() {
-        return cityObj;
+        JSONObject object = null;
+        try {
+            object = new JSONObject(cityObj);
+        } catch (JSONException e){
+            Log.e(TAG, e.getMessage());
+        }
+        return object;
     }
 
-    public void setCityObj(JSONObject cityObj) {
+    public void setCityObj(String cityObj) {
         this.cityObj = cityObj;
+    }
+
+    public String getCityImage() {
+        return cityImage;
+    }
+
+    public void setCityImage(String cityImage) {
+        this.cityImage = cityImage;
     }
 
     @Override
@@ -57,5 +79,7 @@ public class POJOCity implements Parcelable{
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(cityName);
+        parcel.writeString(cityObj);
+        parcel.writeString(cityImage);
     }
 }

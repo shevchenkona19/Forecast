@@ -65,4 +65,34 @@ public class JSONWeatherParser {
         }
         return currWeather;
     }
+
+    public String getCondition(JSONObject object){
+        String cond = null;
+        try {
+            JSONObject query = object.getJSONObject("query");
+            JSONObject results = query.getJSONObject("results");
+            JSONObject channel = results.getJSONObject("channel");
+            JSONObject item = channel.getJSONObject("item");
+            JSONObject condition = item.getJSONObject("condition");
+            cond = condition.getString("text");
+        } catch (JSONException e) {
+            Log.e(TAG, e.getMessage());
+        }
+        return cond;
+    }
+
+    public Boolean isSuccess(JSONObject object){
+        boolean res = false;
+        int count = 0;
+        try {
+            JSONObject query = object.getJSONObject("query");
+            count = query.getInt("count");
+        } catch (JSONException e){
+            Log.e(TAG, e.getMessage());
+        }
+        if (count != 0){
+            res = true;
+        }
+        return res;
+    }
 }
