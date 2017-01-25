@@ -5,4 +5,21 @@ package itea.forecast;
  */
 
 public class CardMarginCalc {
+    float density;
+    int partialWidth;
+    int pageMargin;
+
+    public CardMarginCalc(float density){
+        this.density = density;
+    }
+
+    public int getPageMargin(){
+        pageMargin = 8 * (int)density;
+        return pageMargin;
+    }
+
+    public  int getPartialWidth(){
+        partialWidth = 16 * (int)density;
+        return partialWidth;
+    }
 }

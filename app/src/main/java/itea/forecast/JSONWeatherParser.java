@@ -2,6 +2,7 @@ package itea.forecast;
 
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -94,5 +95,65 @@ public class JSONWeatherParser {
             res = true;
         }
         return res;
+    }
+
+    public String getNameOfDay(int number, JSONObject object){
+        String s = "";
+        try {
+            JSONObject query = object.getJSONObject("query");
+            JSONObject results = query.getJSONObject("results");
+            JSONObject channel = results.getJSONObject("channel");
+            JSONObject item = channel.getJSONObject("item");
+            JSONArray forecast = item.getJSONArray("forecast");
+            s = forecast.getJSONObject(number).getString("day");
+        } catch (JSONException e){
+            Log.e(TAG, e.getMessage());
+        }
+        return s;
+    }
+
+    public String getDate(int number, JSONObject object){
+        String s = "";
+        try {
+            JSONObject query = object.getJSONObject("query");
+            JSONObject results = query.getJSONObject("results");
+            JSONObject channel = results.getJSONObject("channel");
+            JSONObject item = channel.getJSONObject("item");
+            JSONArray forecast = item.getJSONArray("forecast");
+            s = forecast.getJSONObject(number).getString("date");
+        } catch (JSONException e){
+            Log.e(TAG, e.getMessage());
+        }
+        return s;
+    }
+
+    public int getHigh(int number, JSONObject object){
+        int high = 0;
+        try {
+            JSONObject query = object.getJSONObject("query");
+            JSONObject results = query.getJSONObject("results");
+            JSONObject channel = results.getJSONObject("channel");
+            JSONObject item = channel.getJSONObject("item");
+            JSONArray forecast = item.getJSONArray("forecast");
+            high = forecast.getJSONObject(number).getInt("high");
+        } catch (JSONException e){
+            Log.e(TAG, e.getMessage());
+        }
+        return high;
+    }
+
+    public int getLow(int number, JSONObject object){
+        int low = 0;
+        try {
+            JSONObject query = object.getJSONObject("query");
+            JSONObject results = query.getJSONObject("results");
+            JSONObject channel = results.getJSONObject("channel");
+            JSONObject item = channel.getJSONObject("item");
+            JSONArray forecast = item.getJSONArray("forecast");
+            low = forecast.getJSONObject(number).getInt("low");
+        } catch (JSONException e){
+            Log.e(TAG, e.getMessage());
+        }
+        return low;
     }
 }

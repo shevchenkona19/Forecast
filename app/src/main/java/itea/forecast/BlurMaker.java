@@ -2,7 +2,6 @@ package itea.forecast;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BlurMaskFilter;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
@@ -14,7 +13,13 @@ import android.renderscript.ScriptIntrinsicBlur;
 
 public class BlurMaker {
     private static final float BITMAP_SCALE = 0.4f;
-    private static final float BLUR_RADIUS = 5f;
+    private static float BLUR_RADIUS = 5f;
+
+    public BlurMaker(float blurPower){
+        BLUR_RADIUS = blurPower;
+    }
+
+    public BlurMaker(){}
 
     public Bitmap blur(Context context, Bitmap image) {
         int width = Math.round(image.getWidth() * BITMAP_SCALE);

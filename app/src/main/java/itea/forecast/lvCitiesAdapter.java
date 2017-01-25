@@ -2,12 +2,9 @@ package itea.forecast;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
-import android.os.SystemClock;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.JsonReader;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,15 +15,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -37,11 +28,6 @@ public class lvCitiesAdapter extends ArrayAdapter<POJOCity> {
     private List<POJOCity> list;
     private Context context;
     private LayoutInflater inflater;
-    private int currPos;
-    private View view;
-    private Bitmap bit;
-    private ImageView ivBackground;
-    private ProgressBar pbCityLoading;
 
     private static String TAG = lvAddCityAdapter.class.getSimpleName();
 
@@ -50,7 +36,6 @@ public class lvCitiesAdapter extends ArrayAdapter<POJOCity> {
         list = new ArrayList<>();
         this.context = context;
         inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        currPos = -1;
     }
 
     @Override
@@ -71,7 +56,6 @@ public class lvCitiesAdapter extends ArrayAdapter<POJOCity> {
     public void updateList(POJOCity pojoCity){
         this.list.add(pojoCity);
         notifyDataSetChanged();
-        currPos +=1;
     }
 
     @NonNull
@@ -82,15 +66,36 @@ public class lvCitiesAdapter extends ArrayAdapter<POJOCity> {
             view = inflater.inflate(R.layout.list_city_each_item, parent, false);
         }
 
-        ivBackground  = (ImageView) view.findViewById(R.id.ivBackground);
         TextView tvCityName = (TextView) view.findViewById(R.id.tvCityName);
         TextView tvCityTemp = (TextView) view.findViewById(R.id.tvCityTemp);
-        pbCityLoading = (ProgressBar) view.findViewById(R.id.pbCityLoading);
-        if(position >= currPos) {
+
+        final ImageView ivBackground  = (ImageView) view.findViewById(R.id.ivBackground);
+        final ProgressBar pbCityLoading = (ProgressBar) view.findViewById(R.id.pbCityLoading);
+
             tvCityName.setText(list.get(position).getCityName());
             if (list.get(position).getCityObj() == null){
                 Log.e(TAG, "City object is null");
             }
+            Picasso.with(context)
+                    .load(list.get(position).getCityImage())
+                    .into(new Target() {
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                    ivBackground.setImageBitmap(new BlurMaker().blur(context, bitmap));
+                    pbCityLoading.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onBitmapFailed(Drawable errorDrawable) {
+                    ivBackground.setImageDrawable(errorDrawable);
+                    pbCityLoading.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onPrepareLoad(Drawable placeHolderDrawable) {
+                    pbCityLoading.setVisibility(View.VISIBLE);
+                }
+            });
             tvCityTemp.setText(
                     JSONWeatherParser.getInstance()
                     .getCurrentTemp(
@@ -99,43 +104,8 @@ public class lvCitiesAdapter extends ArrayAdapter<POJOCity> {
                             JSONWeatherParser.getInstance()
                     .getCondition(list.get(position).getCityObj())
             );
-            new BitmapFromURL().execute(list.get(position).getCityImage());
 
-
-        }
         return view;
-    }
-
-    private class BitmapFromURL extends AsyncTask<String, Void, Bitmap>{
-        @Override
-        protected void onPreExecute() {
-            pbCityLoading.setVisibility(View.VISIBLE);
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Bitmap doInBackground(String... strings) {
-            Bitmap bitmap = null;
-            try {
-                URL url = new URL(strings[0]);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setDoInput(true);
-                connection.connect();
-                InputStream input = connection.getInputStream();
-                bitmap = BitmapFactory.decodeStream(input);
-            } catch (IOException e) {
-                Log.e(TAG, e.getMessage());
-            }
-            return bitmap;
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap bitmap) {
-            super.onPostExecute(bitmap);
-            pbCityLoading.setVisibility(View.GONE);
-            bit = bitmap;
-            ivBackground.setImageBitmap(new BlurMaker().blur(context, bitmap));
-        }
     }
 
 }

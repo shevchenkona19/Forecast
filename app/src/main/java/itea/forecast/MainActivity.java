@@ -1,27 +1,13 @@
 package itea.forecast;
 
 import android.content.Intent;
-import android.os.AsyncTask;
-import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
-
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
-import java.net.URLStreamHandlerFactory;
-import java.util.Calendar;
-import java.util.logging.StreamHandler;
-
-import javax.net.ssl.HttpsURLConnection;
 
 public class MainActivity extends AppCompatActivity {
     private ListView lvCities;
@@ -40,6 +26,20 @@ public class MainActivity extends AppCompatActivity {
         citiesAdapter = new lvCitiesAdapter(this, R.layout.list_city_each_item);
         lvCities.setAdapter(citiesAdapter);
 
+        lvCities.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent = new Intent(MainActivity.this, CityActivity.class);
+                Bundle b = new Bundle();
+                POJOCity pojoCity = new POJOCity(citiesAdapter.getList().get(i).getCityName(),
+                        citiesAdapter.getList().get(i).getCityObj().toString(),
+                        citiesAdapter.getList().get(i).getCityImage());
+                Log.d("MY", "NAME: " + citiesAdapter.getList().get(i).getCityName());
+                b.putParcelable("CITY", pojoCity);
+                intent.putExtra("BUNDLE", b);
+                startActivity(intent);
+            }
+        });
 
 
         fabAddCity.setOnClickListener(new View.OnClickListener() {
