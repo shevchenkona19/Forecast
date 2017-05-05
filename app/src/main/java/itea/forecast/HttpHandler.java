@@ -25,8 +25,8 @@ public class HttpHandler {
     private HttpHandler() {
     }
 
-    public static HttpHandler getInstance(){
-        if (httpHandler == null){
+    public static HttpHandler getInstance() {
+        if (httpHandler == null) {
             httpHandler = new HttpHandler();
         }
         return httpHandler;
@@ -34,16 +34,17 @@ public class HttpHandler {
 
 
     public String SendRequestToUrl(int regionId) {
+        Log.d(TAG, "Region id: " + regionId);
         String response = null;
         try {
             URL obj = new URL("https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20woeid%3D" + regionId + "%20and%20u='c'&format=json&diagnostics=true&callback=");
+            Log.d(TAG, "Starting a connection...");
             HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
             connection.setRequestMethod("GET");
             connection.setRequestProperty("User-Agent", "Android/5");
             int responseCode = connection.getResponseCode();
-            Log.d(TAG, "Starting a connection...");
             Log.d(TAG, "Response Code is: " + responseCode);
-            if (responseCode == 400){
+            if (responseCode == 400) {
                 Log.e(TAG, "Ooops, something is wrong with query...");
             }
             InputStream in = new BufferedInputStream(connection.getInputStream());

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -13,7 +14,7 @@ import android.widget.ProgressBar;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AddCityActivity extends AppCompatActivity implements lvAddCityAdapter.ISendData {
+public class AddCityActivity extends AppCompatActivity implements lvAddCityAdapter.iAdapterUtils {
     private EditText etSearchTB;
     private ListView lvSearchResults;
     private lvAddCityAdapter addCityAdapter;
@@ -21,6 +22,7 @@ public class AddCityActivity extends AppCompatActivity implements lvAddCityAdapt
     private ProgressBar pbLoading;
 
     private static final String TAG = AddCityActivity.class.getSimpleName();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,7 +31,7 @@ public class AddCityActivity extends AppCompatActivity implements lvAddCityAdapt
         lvSearchResults = (ListView) findViewById(R.id.lvSearchResults);
         pbLoading = (ProgressBar) findViewById(R.id.pbLoading);
 
-        addCityAdapter = new lvAddCityAdapter(this, R.layout.add_city_each_item, this, pbLoading, etSearchTB);
+        addCityAdapter = new lvAddCityAdapter(this, R.layout.add_city_each_item, this);
         lvSearchResults.setAdapter(addCityAdapter);
 
         etSearchTB.addTextChangedListener(new TextWatcher() {
@@ -39,18 +41,18 @@ public class AddCityActivity extends AppCompatActivity implements lvAddCityAdapt
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if(charSequence.toString().equals("")){
+                if (charSequence.toString().equals("")) {
                     return;
                 }
-                for (int a = 0; a<=CityNames.cityNames.length; a += 3){
-                    if(a >= CityNames.cityNames.length-2){
+                for (int a = 0; a <= CityNames.cityNames.length; a += 3) {
+                    if (a >= CityNames.cityNames.length - 2) {
                         continue;
                     }
                     try {
                         if (CityNames.cityNames[a].substring(0, charSequence.length()).equals(charSequence.toString())) {
                             names.add(CityNames.cityNames[a]);
                         }
-                    } catch (StringIndexOutOfBoundsException e){
+                    } catch (StringIndexOutOfBoundsException e) {
                         Log.e(TAG, e.getMessage());
                     }
                 }
@@ -73,5 +75,20 @@ public class AddCityActivity extends AppCompatActivity implements lvAddCityAdapt
         intent.putExtra("BUNDLE", b);
         setResult(RESULT_OK, intent);
         finish();
+    }
+
+    @Override
+    public void blockInput() {
+        etSearchTB.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showLoading() {
+        pbLoading.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideLoading() {
+        pbLoading.setVisibility(View.GONE);
     }
 }

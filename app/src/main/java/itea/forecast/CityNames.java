@@ -6,7 +6,7 @@ package itea.forecast;
 
 public class CityNames {
     public static final String[] cityNames = {
-            "kiev","924938", "http://the-city.kiev.ua/media/image/slider/mainslide-14363931359-shpka-kiev9.jpg",
+            "kiev", "924938", "http://the-city.kiev.ua/media/image/slider/mainslide-14363931359-shpka-kiev9.jpg",
             "izyum", "921412", "http://i255.photobucket.com/albums/hh156/geniorn/DSC03198_199_200SMALL.jpg",
             "kharkiv", "922137", "http://photoe.kiev.ua/Photos/2015/2015.08.10.Kharkiv/IMG_3660_Kharkiv_sandm_SM.jpg",
             "moscow", "2346910", "http://www.travel2moscow.com/upload/48462/%D0%BC%D0%BE%D1%81%D0%BA%D0%B2%D0%B0.jpg",

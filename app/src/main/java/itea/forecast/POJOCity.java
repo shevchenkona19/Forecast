@@ -10,23 +10,30 @@ import org.json.JSONObject;
 /**
  * Created by shevc on 14.12.2016.
  */
-public class POJOCity implements Parcelable{
+public class POJOCity implements Parcelable {
     private String cityName;
     private String cityObj;
     private String cityImage;
+    private String woeid;
 
     private static final String TAG = POJOCity.class.getSimpleName();
 
-    public POJOCity(String cityName, String cityObj, String cityImage) {
+    public POJOCity(String cityName, String cityObj, String cityImage, String woeid) {
         this.cityName = cityName;
         this.cityObj = cityObj;
         this.cityImage = cityImage;
+        this.woeid = woeid;
+    }
+
+    public String getWoeid() {
+        return woeid;
     }
 
     protected POJOCity(Parcel in) {
         cityName = in.readString();
         cityObj = in.readString();
         cityImage = in.readString();
+        woeid = in.readString();
     }
 
     public static final Creator<POJOCity> CREATOR = new Creator<POJOCity>() {
@@ -53,7 +60,7 @@ public class POJOCity implements Parcelable{
         JSONObject object = null;
         try {
             object = new JSONObject(cityObj);
-        } catch (JSONException e){
+        } catch (JSONException e) {
             Log.e(TAG, e.getMessage());
         }
         return object;
@@ -61,6 +68,10 @@ public class POJOCity implements Parcelable{
 
     public void setCityObj(String cityObj) {
         this.cityObj = cityObj;
+    }
+
+    public void setCityObj(JSONObject cityObj) {
+        this.cityObj = cityObj.toString();
     }
 
     public String getCityImage() {
@@ -81,5 +92,6 @@ public class POJOCity implements Parcelable{
         parcel.writeString(cityName);
         parcel.writeString(cityObj);
         parcel.writeString(cityImage);
+        parcel.writeString(woeid);
     }
 }

@@ -28,25 +28,26 @@ public class lvAddCityAdapter extends ArrayAdapter<String> {
     private List<String> list;
     private Context context;
     private LayoutInflater inflater;
-    private View view;
-    private ISendData sendData;
+    private iAdapterUtils adapterUtils;
     private JSONObject obj;
     private int currPos;
-    private ProgressBar pbLoading;
-    private EditText etSearch;
     private Toast errorMsg;
 
     private static final String TAG = lvAddCityAdapter.class.getSimpleName();
 
-    interface ISendData {
+    interface iAdapterUtils {
         void sendData(POJOCity city);
+
+        void blockInput();
+
+        void showLoading();
+
+        void hideLoading();
     }
 
-    public lvAddCityAdapter(Context context, int resource, ISendData sendData, ProgressBar pbLoading, EditText etSearch) {
+    public lvAddCityAdapter(Context context, int resource, iAdapterUtils adapterUtils) {
         super(context, resource);
-        this.etSearch = etSearch;
-        this.pbLoading = pbLoading;
-        this.sendData = sendData;
+        this.adapterUtils = adapterUtils;
         this.context = context;
         list = new ArrayList<>();
         obj = null;
@@ -79,21 +80,18 @@ public class lvAddCityAdapter extends ArrayAdapter<String> {
         final TextView tvCityName = (TextView) view.findViewById(R.id.tvAddCityName);
         Button btnAdd = (Button) view.findViewById(R.id.btnAddCity);
         tvCityName.setText(list.get(position));
-        btnAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                etSearch.setVisibility(View.GONE);
-                currPos = position;
-                GetJSONCityObj runn = new GetJSONCityObj();
-                for (int a = 0; a < CityNames.cityNames.length; a++) {
-                    if (CityNames.cityNames[a].equals(list.get(position))) {
-                        runn.execute(CityNames.cityNames[a + 1], CityNames.cityNames[a+2]);
-                        Log.d("MY", "WOEID: " + CityNames.cityNames[a + 1]);
-                        break;
-                    }
+        btnAdd.setOnClickListener(view1 -> {
+            adapterUtils.blockInput();
+            currPos = position;
+            GetJSONCityObj runn = new GetJSONCityObj();
+            for (int a = 0; a < CityNames.cityNames.length; a++) {
+                if (CityNames.cityNames[a].equals(list.get(position))) {
+                    runn.execute(CityNames.cityNames[a + 1], CityNames.cityNames[a + 2]);
+                    Log.d("MY", "WOEID: " + CityNames.cityNames[a + 1]);
+                    break;
                 }
-
             }
+
         });
 
         return view;
@@ -104,7 +102,7 @@ public class lvAddCityAdapter extends ArrayAdapter<String> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pbLoading.setVisibility(View.VISIBLE);
+            adapterUtils.showLoading();
         }
 
         @Override
@@ -124,8 +122,8 @@ public class lvAddCityAdapter extends ArrayAdapter<String> {
             } catch (JSONException e) {
                 Log.e(TAG, e.getMessage());
             }
-            pojoCity = new POJOCity(list.get(currPos), object.toString(), strings[1]);
-            if (pojoCity.getCityObj() == null){
+            pojoCity = new POJOCity(list.get(currPos), object.toString(), strings[1], strings[0]);
+            if (pojoCity.getCityObj() == null) {
                 Log.e(TAG, "City object is null");
             }
             return pojoCity;
@@ -133,14 +131,12 @@ public class lvAddCityAdapter extends ArrayAdapter<String> {
 
         @Override
         protected void onPostExecute(POJOCity pojoCity) {
-            if (pojoCity.getCityObj() == null){
+            if (pojoCity.getCityObj() == null) {
                 Log.e(TAG, "City object is null");
             }
             super.onPostExecute(pojoCity);
-            etSearch = null;
-            pbLoading.setVisibility(View.GONE);
-            pbLoading = null;
-            sendData.sendData(pojoCity);
+            adapterUtils.hideLoading();
+            adapterUtils.sendData(pojoCity);
         }
     }
 }

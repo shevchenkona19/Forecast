@@ -2,10 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal" android:layout_width="match_parent"
-    android:layout_height="match_parent"
     android:id="@+id/tvCityName"
     android:weightSum="2"
-    android:padding="24dp">
+    android:paddingLeft="24dp"
+    android:paddingRight="24dp"
+    android:layout_height="80dp">
 
     <TextView
         android:text="TextView"
@@ -19,9 +20,10 @@
     <Button
         android:text="add"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:id="@+id/btnAddCity"
         android:layout_weight="1"
         style="@style/Widget.AppCompat.Button.Borderless.Colored"
-        tools:text="add" />
+        tools:text="add"
+        android:textSize="20dp" />
 </LinearLayout>

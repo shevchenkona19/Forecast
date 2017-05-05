@@ -84,12 +84,14 @@
 
             <android.support.design.widget.AppBarLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="60dp">
+                android:layout_height="90dp"
+                android:layout_marginBottom="12dp">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
+
                     <TextView
                         android:id="@+id/tvAppBarSlidePanelLabel"
                         android:layout_width="wrap_content"
@@ -99,33 +101,38 @@
                         android:text="Weather for 10 days"
                         android:textColor="@android:color/white"
                         android:textSize="20dp" />
-                    <com.github.tibolte.agendacalendarview.calendar.CalendarView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/cvCalendar"
-                        android:layout_marginTop="30dp"
-                        />
-
                 </LinearLayout>
-
 
             </android.support.design.widget.AppBarLayout>
 
+            <com.test.tudou.library.WeekPager.view.WeekRecyclerView
+                android:id="@+id/wrvHeader"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:clipToPadding="false"
+                android:scrollbars="none"></com.test.tudou.library.WeekPager.view.WeekRecyclerView>
 
+            <TextView
+                android:id="@+id/tvDateDisplay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textColor="@android:color/black"
+                android:textSize="16dp" />
 
-            <android.support.v4.view.ViewPager
-                android:id="@+id/vpCardPager"
+            <com.test.tudou.library.WeekPager.view.WeekDayViewPager
+                android:id="@+id/vpPager"
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
-                android:layout_gravity="bottom"
                 android:clipToPadding="false"
                 android:overScrollMode="never"
+                android:paddingBottom="20dp"
+                android:paddingLeft="60dp"
+                android:paddingRight="60dp"
+                android:paddingTop="40dp">
 
-                android:paddingBottom="30dp"
-                android:paddingEnd="60dp"
-                android:paddingStart="60dp">
+            </com.test.tudou.library.WeekPager.view.WeekDayViewPager>
 
-            </android.support.v4.view.ViewPager>
 
         </LinearLayout>
 

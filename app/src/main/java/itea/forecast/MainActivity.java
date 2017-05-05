@@ -7,13 +7,19 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements lvCitiesAdapter.iShowLoading {
     private ListView lvCities;
     private FloatingActionButton fabAddCity;
     private lvCitiesAdapter citiesAdapter;
     private final int REQUESTCODE_ADDCITY = 1212;
+    private ImageView ivEmptyPic;
+    private ImageButton ibRefresh;
+    private ProgressBar pbRefreshLoading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,33 +28,51 @@ public class MainActivity extends AppCompatActivity {
 
         lvCities = (ListView) findViewById(R.id.lvCities);
         fabAddCity = (FloatingActionButton) findViewById(R.id.fabAddCity);
+        ivEmptyPic = (ImageView) findViewById(R.id.ivEmptyPick);
+        ibRefresh = (ImageButton) findViewById(R.id.ibRefresh);
+        pbRefreshLoading = (ProgressBar) findViewById(R.id.pbRefreshLoading);
 
-        citiesAdapter = new lvCitiesAdapter(this, R.layout.list_city_each_item);
+        pbRefreshLoading.setVisibility(View.GONE);
+
+        citiesAdapter = new lvCitiesAdapter(this, R.layout.list_city_each_item, this);
         lvCities.setAdapter(citiesAdapter);
 
-        lvCities.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(MainActivity.this, CityActivity.class);
-                Bundle b = new Bundle();
-                POJOCity pojoCity = new POJOCity(citiesAdapter.getList().get(i).getCityName(),
-                        citiesAdapter.getList().get(i).getCityObj().toString(),
-                        citiesAdapter.getList().get(i).getCityImage());
-                Log.d("MY", "NAME: " + citiesAdapter.getList().get(i).getCityName());
-                b.putParcelable("CITY", pojoCity);
-                intent.putExtra("BUNDLE", b);
-                startActivity(intent);
-            }
+        lvCities.setOnItemClickListener((adapterView, view, i, l) -> {
+            Intent intent = new Intent(MainActivity.this, CityActivity.class);
+            Bundle b = new Bundle();
+            POJOCity pojoCity = new POJOCity(citiesAdapter.getList().get(i).getCityName(),
+                    citiesAdapter.getList().get(i).getCityObj().toString(),
+                    citiesAdapter.getList().get(i).getCityImage(), citiesAdapter.getList().get(i).getWoeid());
+            Log.d("MY", "NAME: " + citiesAdapter.getList().get(i).getCityName());
+            b.putParcelable("CITY", pojoCity);
+            intent.putExtra("BUNDLE", b);
+            startActivity(intent);
         });
 
 
-        fabAddCity.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, AddCityActivity.class);
-                startActivityForResult(intent, REQUESTCODE_ADDCITY);
-            }
+        fabAddCity.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, AddCityActivity.class);
+            startActivityForResult(intent, REQUESTCODE_ADDCITY);
         });
+
+        if (citiesAdapter.getCount() == 0) {
+            ivEmptyPic.setVisibility(View.VISIBLE);
+            lvCities.setVisibility(View.GONE);
+            ivEmptyPic.setImageDrawable(getResources().getDrawable(R.drawable.lv_empty_pic));
+
+        } else {
+            lvCities.setVisibility(View.VISIBLE);
+            ivEmptyPic.setVisibility(View.GONE);
+            ivEmptyPic.setImageDrawable(null);
+        }
+
+        ivEmptyPic.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, AddCityActivity.class);
+            startActivityForResult(intent, REQUESTCODE_ADDCITY);
+        });
+
+        ibRefresh.setOnClickListener(view -> citiesAdapter.refresh());
+
     }
 
     @Override
@@ -61,4 +85,28 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (citiesAdapter.getCount() == 0) {
+            ivEmptyPic.setVisibility(View.VISIBLE);
+            lvCities.setVisibility(View.GONE);
+            ivEmptyPic.setImageDrawable(getResources().getDrawable(R.drawable.lv_empty_pic));
+
+        } else {
+            ivEmptyPic.setVisibility(View.GONE);
+            lvCities.setVisibility(View.VISIBLE);
+            ivEmptyPic.setImageDrawable(null);
+        }
+    }
+
+    @Override
+    public void showProgressBar() {
+        pbRefreshLoading.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideProgressBar() {
+        pbRefreshLoading.setVisibility(View.GONE);
+    }
 }

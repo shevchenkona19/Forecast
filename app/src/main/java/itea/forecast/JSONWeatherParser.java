@@ -67,7 +67,7 @@ public class JSONWeatherParser {
         return currWeather;
     }
 
-    public String getCondition(JSONObject object){
+    public String getCondition(JSONObject object) {
         String cond = null;
         try {
             JSONObject query = object.getJSONObject("query");
@@ -82,22 +82,22 @@ public class JSONWeatherParser {
         return cond;
     }
 
-    public Boolean isSuccess(JSONObject object){
+    public Boolean isSuccess(JSONObject object) {
         boolean res = false;
         int count = 0;
         try {
             JSONObject query = object.getJSONObject("query");
             count = query.getInt("count");
-        } catch (JSONException e){
+        } catch (JSONException e) {
             Log.e(TAG, e.getMessage());
         }
-        if (count != 0){
+        if (count != 0) {
             res = true;
         }
         return res;
     }
 
-    public String getNameOfDay(int number, JSONObject object){
+    public String getNameOfDay(int number, JSONObject object) {
         String s = "";
         try {
             JSONObject query = object.getJSONObject("query");
@@ -106,13 +106,13 @@ public class JSONWeatherParser {
             JSONObject item = channel.getJSONObject("item");
             JSONArray forecast = item.getJSONArray("forecast");
             s = forecast.getJSONObject(number).getString("day");
-        } catch (JSONException e){
+        } catch (JSONException e) {
             Log.e(TAG, e.getMessage());
         }
         return s;
     }
 
-    public String getDate(int number, JSONObject object){
+    public String getDate(int number, JSONObject object) {
         String s = "";
         try {
             JSONObject query = object.getJSONObject("query");
@@ -121,13 +121,13 @@ public class JSONWeatherParser {
             JSONObject item = channel.getJSONObject("item");
             JSONArray forecast = item.getJSONArray("forecast");
             s = forecast.getJSONObject(number).getString("date");
-        } catch (JSONException e){
+        } catch (JSONException e) {
             Log.e(TAG, e.getMessage());
         }
         return s;
     }
 
-    public int getHigh(int number, JSONObject object){
+    public int getHigh(int number, JSONObject object) {
         int high = 0;
         try {
             JSONObject query = object.getJSONObject("query");
@@ -136,13 +136,13 @@ public class JSONWeatherParser {
             JSONObject item = channel.getJSONObject("item");
             JSONArray forecast = item.getJSONArray("forecast");
             high = forecast.getJSONObject(number).getInt("high");
-        } catch (JSONException e){
+        } catch (JSONException e) {
             Log.e(TAG, e.getMessage());
         }
         return high;
     }
 
-    public int getLow(int number, JSONObject object){
+    public int getLow(int number, JSONObject object) {
         int low = 0;
         try {
             JSONObject query = object.getJSONObject("query");
@@ -151,7 +151,7 @@ public class JSONWeatherParser {
             JSONObject item = channel.getJSONObject("item");
             JSONArray forecast = item.getJSONArray("forecast");
             low = forecast.getJSONObject(number).getInt("low");
-        } catch (JSONException e){
+        } catch (JSONException e) {
             Log.e(TAG, e.getMessage());
         }
         return low;

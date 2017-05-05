@@ -4,37 +4,26 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.github.tibolte.agendacalendarview.AgendaCalendarView;
-import com.github.tibolte.agendacalendarview.CalendarManager;
-import com.github.tibolte.agendacalendarview.CalendarPickerController;
-import com.github.tibolte.agendacalendarview.agenda.AgendaHeaderView;
-import com.github.tibolte.agendacalendarview.calendar.CalendarView;
-import com.github.tibolte.agendacalendarview.calendar.weekslist.WeekListView;
-import com.github.tibolte.agendacalendarview.models.CalendarEvent;
-import com.github.tibolte.agendacalendarview.models.DayItem;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
+import com.test.tudou.library.WeekPager.adapter.WeekViewAdapter;
+import com.test.tudou.library.WeekPager.view.WeekDayViewPager;
+import com.test.tudou.library.WeekPager.view.WeekRecyclerView;
+import com.test.tudou.library.model.CalendarDay;
+import com.test.tudou.library.util.DayUtils;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
-import java.util.Locale;
 
-public class CityActivity extends AppCompatActivity{
+public class CityActivity extends AppCompatActivity {
 
     private static final String TAG = CityActivity.class.getSimpleName();
 
@@ -44,9 +33,9 @@ public class CityActivity extends AppCompatActivity{
     private ProgressBar pbLoading;
     private TextView tvAppBarSlidePanelLabel;
     private SlidingUpPanelLayout slidingUpPanelLayout;
-    private ViewPager vpCardPager;
-    private CardViewPagerAdapter viewPagerAdapter;
-    private CalendarView cvCalendar;
+    private WeekDayViewPager mPagerContent;
+    private WeekRecyclerView weekRecyclerView;
+    private TextView tvDateDisplay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,9 +47,9 @@ public class CityActivity extends AppCompatActivity{
         pbLoading = (ProgressBar) findViewById(R.id.pbCityActivityLoading);
         tvAppBarSlidePanelLabel = (TextView) findViewById(R.id.tvAppBarSlidePanelLabel);
         slidingUpPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.slidePanel);
-        vpCardPager = (ViewPager) findViewById(R.id.vpCardPager);
-        cvCalendar = (CalendarView) findViewById(R.id.cvCalendar);
-
+        mPagerContent = (WeekDayViewPager) findViewById(R.id.vpPager);
+        weekRecyclerView = (WeekRecyclerView) findViewById(R.id.wrvHeader);
+        tvDateDisplay = (TextView) findViewById(R.id.tvDateDisplay);
 
         slidingUpPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
@@ -70,7 +59,7 @@ public class CityActivity extends AppCompatActivity{
 
             @Override
             public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
-                switch (newState){
+                switch (newState) {
                     case EXPANDED:
                         tvAppBarSlidePanelLabel.setText("");
                         break;
@@ -90,17 +79,17 @@ public class CityActivity extends AppCompatActivity{
         }
 
         Bundle b = getIntent().getExtras().getBundle("BUNDLE");
-        if (b == null){
+        if (b == null) {
             Log.e(TAG, "bundle is null");
         }
         POJOCity pojoCity = b.getParcelable("CITY");
-        if (pojoCity == null){
+        if (pojoCity == null) {
             Log.e(TAG, "PojoCity is null");
         }
         tvCityName.setText(pojoCity.getCityName());
         tvCityTemp.setText(
                 JSONWeatherParser.getInstance().getCurrentTemp(pojoCity.getCityObj())
-                + "°C"
+                        + "°C"
         );
         Picasso.with(this)
                 .load(pojoCity.getCityImage())
@@ -124,25 +113,48 @@ public class CityActivity extends AppCompatActivity{
                 });
         Calendar minDate = Calendar.getInstance();
         Calendar maxDate = Calendar.getInstance();
-        List<CalendarEvent> list = new ArrayList<>();
         minDate.add(Calendar.DAY_OF_MONTH, 0);
-        maxDate.add(Calendar.DAY_OF_MONTH, (Calendar.getInstance().get(Calendar.DAY_OF_MONTH) +7));
-        if (minDate == null|| minDate.equals(null)){
-            Log.e(TAG, "mindate is null");
-        }
-        if (maxDate == null || maxDate.equals(null)){
-            Log.e(TAG, "maxdate is null");
-        }
-        CalendarManager manager = CalendarManager.getInstance(this);
-        manager.buildCal(minDate, maxDate, Locale.getDefault());
-        cvCalendar.init(manager, R.color.colorAccent, R.color.colorAccent, R.color.colorAccent);
-        cvCalendar.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+        maxDate.add(Calendar.DAY_OF_MONTH, (Calendar.getInstance().get(Calendar.DAY_OF_MONTH) + 7));
 
-        viewPagerAdapter = new CardViewPagerAdapter(getApplicationContext(), pojoCity);
-        vpCardPager.setAdapter(viewPagerAdapter);
-        vpCardPager.setOffscreenPageLimit(3);
-        vpCardPager.setPageMargin(new CardMarginCalc(getResources().getDisplayMetrics().density).getPageMargin() + 40);
+
+        final CardViewPagerAdapter adapter = new CardViewPagerAdapter(getSupportFragmentManager(), pojoCity);
+        mPagerContent.setAdapter(adapter);
+        mPagerContent.setOffscreenPageLimit(3);
+        mPagerContent.setPageMargin(110);
+        mPagerContent.setWeekRecyclerView(weekRecyclerView);
+        mPagerContent.setDayScrollListener(new WeekDayViewPager.DayScrollListener() {
+            @Override
+            public void onDayPageScrolled(int i, float v, int i1) {
+                tvDateDisplay.setText(DayUtils.formatEnglishTime(adapter.getDatas().get(i + 1).getTime()));
+            }
+
+            @Override
+            public void onDayPageSelected(int i) {
+
+            }
+
+            @Override
+            public void onDayPageScrollStateChanged(int i) {
+
+            }
+        });
+        WeekViewAdapter mWeekView = new WeekViewAdapter(this, mPagerContent);
+        mWeekView.setTextNormalColor(getResources().getColor(android.R.color.darker_gray));
+        weekRecyclerView.setAdapter(mWeekView);
+        CalendarDay startDay = new CalendarDay();
+        startDay.setDay(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
+        CalendarDay finishDay = new CalendarDay();
+        finishDay.setDay(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH) + 10);
+        mWeekView.setData(startDay, finishDay, null);
+        adapter.setData(startDay, finishDay);
+
+        mWeekView.setTextUnableColor(getResources().getColor(R.color.color_CCCCCC));
+
+        mWeekView.setIndicatorColor(getResources().getColor(R.color.color_CCCCCC));
+        mWeekView.setTextSelectColor(getResources().getColor(R.color.text_color_normal));
+        mWeekView.setTextNormalColor(getResources().getColor(R.color.text_color_normal));
 
     }
+
 
 }
